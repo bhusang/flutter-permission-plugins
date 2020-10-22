@@ -177,7 +177,7 @@
     } else if ([[NSBundle mainBundle]
                    objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"] != nil) {
       _permissionLevel = PermissionLevelLocationAlwaysAndWhenInUse;
-      [_locationManager PermissionLevelLocationWhenInUse];
+      [_locationManager requestWhenInUseAuthorization];
     } else {
       _result([FlutterError
           errorWithCode:@"ERROR_MISSING_PROPERTYKEY"
