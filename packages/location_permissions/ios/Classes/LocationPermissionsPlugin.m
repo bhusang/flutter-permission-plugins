@@ -121,11 +121,30 @@
                    objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] != nil) {
       _permissionLevel = PermissionLevelLocationWhenInUse;
       [_locationManager requestWhenInUseAuthorization];
+    } else if ([[NSBundle mainBundle]
+                   objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"] != nil) {
+      _permissionLevel = PermissionLevelLocationAlwaysAndWhenInUse;
+      [_locationManager requestWhenInUseAuthorization]; // no easy choice here
     } else {
       _result([FlutterError
           errorWithCode:@"ERROR_MISSING_PROPERTYKEY"
-                message:@"To use location in iOS8 you need to define either "
+                message:@"To use location in iOS8+ you need to define either "
                         @"NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription "
+                        @"in the app bundle's Info.plist file"
+                details:nil]);
+      _result = nil;
+      return;
+    }
+  } else if (level == PermissionLevelLocationAlwaysAndWhenInUse) {
+    if ([[NSBundle mainBundle]
+                   objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"] != nil) {
+      _permissionLevel = PermissionLevelLocationAlwaysAndWhenInUse;
+      [_locationManager requestWhenInUseAuthorization];
+    } else {
+      _result([FlutterError
+          errorWithCode:@"ERROR_MISSING_PROPERTYKEY"
+                message:@"To use location in iOS8+ you need to define "
+                        @"NSLocationWhenInUseUsageDescription or NSLocationAlwaysAndWhenInUseUsageDescription "
                         @"in the app bundle's Info.plist file"
                 details:nil]);
       _result = nil;
@@ -136,11 +155,16 @@
         nil) {
       _permissionLevel = PermissionLevelLocationAlways;
       [_locationManager requestAlwaysAuthorization];
+    } else if ([[NSBundle mainBundle]
+                   objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"] != nil) {
+      _permissionLevel = PermissionLevelLocationAlwaysAndWhenInUse;
+      [_locationManager requestAlwaysAuthorization];
     } else {
       _result([FlutterError
           errorWithCode:@"ERROR_MISSING_PROPERTYKEY"
-                message:@"To use location in iOS8 you need to define "
-                        @"NSLocationAlwaysUsageDescription in the app bundle's Info.plist file"
+                message:@"To use location in iOS8+ you need to define "
+                        @"NSLocationAlwaysUsageDescription or NSLocationAlwaysAndWhenInUseUsageDescription"
+                        @"in the app bundle's Info.plist file"
                 details:nil]);
       _result = nil;
       return;
@@ -150,11 +174,16 @@
         nil) {
       _permissionLevel = PermissionLevelLocationWhenInUse;
       [_locationManager requestWhenInUseAuthorization];
+    } else if ([[NSBundle mainBundle]
+                   objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"] != nil) {
+      _permissionLevel = PermissionLevelLocationAlwaysAndWhenInUse;
+      [_locationManager PermissionLevelLocationWhenInUse];
     } else {
       _result([FlutterError
           errorWithCode:@"ERROR_MISSING_PROPERTYKEY"
-                message:@"To use location in iOS8 you need to define "
-                        @"NSLocationWhenInUseUsageDescription in the app bundle's Info.plist file"
+                message:@"To use location in iOS8+ you need to define "
+                        @"NSLocationWhenInUseUsageDescription or NSLocationAlwaysAndWhenInUseUsageDescription "
+                        @"in the app bundle's Info.plist file"
                 details:nil]);
       _result = nil;
       return;
@@ -198,7 +227,8 @@
           return PermissionStatusGranted;
       }
     }
-
+    // for both PermissionLevelLocationAlwaysAndWhenInUse 
+    // and PermissionLevelLocationWhenInUse
     switch (authorizationStatus) {
       case kCLAuthorizationStatusNotDetermined:
         return PermissionStatusUnknown;
